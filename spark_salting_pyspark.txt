@@ -1,0 +1,14 @@
+from pyspark.sql.functions import col,rand
+
+cust = [(1, "gowtham"), (2, "nandhu"), (3, "saravana"), (4, "sri"), (5, "nila")]
+item = [(1, "phone"), (2, "tv"), (3, "washing machine"), (4, "refrigerator"), (5, "watch")]
+
+df1 = spark.createDataFrame(cust, ["id", "name"])
+df2 = spark.createDataFrame(item, ["id", "product"])
+
+num_partition=2
+
+df1_salt = df1.withColumn("salt_col",(rand() * num_partition).cast("int"))
+re = df1_salt.repartition(num_partition,"salt_col")
+join_ex = re.join(df2,on="id")
+join_ex.show()
